@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cupping Lab, a decision tree that tastes the difference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">☕</span>
+      <div>
+        <h1>Cupping Lab</h1>
+        <p class="tagline">A hand-built decision tree that tastes the difference between washed, natural, honey &amp; semi-washed coffee</p>
+      </div>
+    </div>
+    <div class="brand-stat" id="datasetStat">
+      <span class="stat-loading">loading dataset&hellip;</span>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- LEFT: controls -->
+  <section class="panel controls-panel">
+    <h2 class="panel-title">01 &middot; Grow the tree</h2>
+    <p class="panel-sub">Same hyperparameters from Grokking ML ch.9, tune them and watch the tree reshape itself.</p>
+
+    <label class="field">
+      <span>Splitting criterion</span>
+      <div class="segmented" id="criterionToggle">
+        <button type="button" data-value="entropy" class="seg-btn active">Entropy</button>
+        <button type="button" data-value="gini" class="seg-btn">Gini</button>
+      </div>
+    </label>
+
+    <label class="field">
+      <span>Max depth <b id="maxDepthVal">4</b></span>
+      <input type="range" id="maxDepth" min="1" max="8" step="1" value="4" />
+    </label>
+
+    <label class="field">
+      <span>Min samples to split <b id="minSplitVal">10</b></span>
+      <input type="range" id="minSplit" min="4" max="60" step="2" value="10" />
+    </label>
+
+    <label class="field">
+      <span>Min samples per leaf <b id="minLeafVal">4</b></span>
+      <input type="range" id="minLeaf" min="1" max="30" step="1" value="4" />
+    </label>
+
+    <label class="field">
+      <span>Min impurity decrease <b id="minGainVal">0.001</b></span>
+      <input type="range" id="minGain" min="0" max="0.05" step="0.001" value="0.001" />
+    </label>
+
+    <button id="trainBtn" class="btn-primary">Train the tree</button>
+
+    <div id="trainStatus" class="train-status"></div>
+
+    <div class="metrics" id="metrics" hidden>
+      <div class="metric">
+        <span class="metric-label">Test accuracy</span>
+        <span class="metric-value" id="testAcc">—</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Majority-class baseline</span>
+        <span class="metric-value" id="baselineAcc">—</span>
+      </div>
+      <div class="metric metric-note" id="metricNote"></div>
+      <div class="metric">
+        <span class="metric-label">Depth reached / leaves</span>
+        <span class="metric-value" id="depthLeaves">—</span>
+      </div>
+    </div>
+
+    <div class="importance" id="importance" hidden>
+      <h3>What the tree learned to ask first</h3>
+      <div id="importanceBars"></div>
+    </div>
+
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <!-- CENTER: tree canvas -->
+  <section class="panel tree-panel">
+    <h2 class="panel-title">02 &middot; The tree</h2>
+    <p class="panel-sub">Each card is a question, answered <b>yes</b> (left) or <b>no</b> (right). Leaves show the verdict and how the votes split.</p>
+    <div class="tree-scroll" id="treeScroll">
+      <div class="tree-empty" id="treeEmpty">Train a tree to see it grow here.</div>
+      <svg id="treeSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+  </section>
+
+  <!-- RIGHT: cupping form / prediction -->
+  <section class="panel predict-panel">
+    <h2 class="panel-title">03 &middot; Cup a new lot</h2>
+    <p class="panel-sub">Enter an SCA-style cupping score sheet for an unlabeled lot and send it down the tree.</p>
+
+    <div class="presets" id="presets"></div>
+
+    <form id="cupForm" class="cup-form"></form>
+
+    <button id="predictBtn" class="btn-primary" type="submit" form="cupForm">Send it down the tree</button>
+
+    <div class="prediction" id="prediction" hidden>
+      <div class="verdict" id="verdict"></div>
+      <div class="proba-bars" id="probaBars"></div>
+      <div class="path-narration">
+        <h3>How the tree got there</h3>
+        <ol id="pathList"></ol>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  Built for Chapter 9 of <i>Grokking Machine Learning</i> (Luis Serrano). Decision tree, entropy, Gini index and
+  accuracy all implemented from scratch in <code>backend/app/decision_tree.py</code>, no scikit-learn involved.
+  Dataset: CQI Arabica cupping reviews.
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
